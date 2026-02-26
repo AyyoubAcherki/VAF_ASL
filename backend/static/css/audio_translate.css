@@ -1,0 +1,424 @@
+/* ===== AUDIO TRANSLATE SPECIFIC STYLES ===== */
+.audio-translate-section {
+    padding: var(--spacing-lg) 0;
+}
+
+.audio-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.audio-input {
+    background: var(--white);
+    padding: var(--spacing-md);
+    border-radius: 15px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.input-method-tabs {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--light-gray);
+}
+
+.tab-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    background: transparent;
+    color: var(--gray);
+    cursor: pointer;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+    transition: var(--transition);
+}
+
+.tab-btn.active {
+    color: var(--primary-blue);
+    border-bottom-color: var(--primary-orange);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.recorder-controls {
+    text-align: center;
+    padding: var(--spacing-md);
+}
+
+.btn-record {
+    font-size: 1.2rem;
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.record-icon {
+    font-size: 1.5rem;
+    margin-right: var(--spacing-xs);
+}
+
+.recording-status {
+    margin-top: var(--spacing-sm);
+    font-weight: 600;
+    color: var(--error);
+}
+
+.recording-status.recording {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.upload-controls {
+    text-align: center;
+    padding: var(--spacing-md);
+}
+
+.file-info {
+    margin-top: var(--spacing-sm);
+    color: var(--gray);
+}
+
+.audio-actions {
+    text-align: center;
+    margin-top: var(--spacing-md);
+}
+
+.translation-result {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.text-result,
+.sign-animation {
+    background: var(--white);
+    padding: var(--spacing-md);
+    border-radius: 15px;
+    box-shadow: var(--shadow-md);
+}
+
+.transcribed-text {
+    min-height: 100px;
+    padding: var(--spacing-sm);
+    background: var(--light-gray);
+    border-radius: 8px;
+    margin-top: var(--spacing-sm);
+}
+
+.transcribed-text.placeholder {
+    color: var(--gray);
+    font-style: italic;
+}
+
+/* ===== PRO AVATAR STYLES ===== */
+.pro-avatar-container {
+    margin-top: 20px;
+    perspective: 1000px;
+}
+
+.pro-avatar-card {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #000;
+    transition: transform 0.3s ease;
+}
+
+.pro-avatar-img,
+.pro-avatar-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    min-height: 400px;
+    /* Ensure height matches */
+}
+
+.pro-avatar-video {
+    display: none;
+    /* Hidden by default */
+    background: #000;
+}
+
+.pro-avatar-video.active {
+    display: block;
+}
+
+.pro-avatar-img.hidden {
+    display: none;
+}
+
+@keyframes avatarBreathe {
+
+    0%,
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+        filter: brightness(1.05);
+    }
+}
+
+.pro-avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.sign-badge {
+    background: rgba(76, 175, 80, 0.95);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    animation: badgePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    border: 3px solid white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.pro-avatar-status {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 6px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #fff;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background: #4CAF50;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #4CAF50;
+    transition: background 0.3s ease;
+}
+
+@keyframes badgePop {
+    0% {
+        transform: scale(0.5) translateY(20px);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.1) translateY(-5px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.avatar-active {
+    opacity: 1 !important;
+    filter: brightness(1.15) contrast(1.1);
+}
+
+/* Current Sign Display */
+.current-sign-display {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--light-blue);
+    border-radius: 15px;
+}
+
+.sign-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.sign-char {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    display: block;
+    min-height: 50px;
+}
+
+.sign-name {
+    font-size: 1.2rem;
+    color: var(--gray);
+    font-weight: 600;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background: var(--light-gray);
+    border-radius: 10px;
+    margin-top: var(--spacing-sm);
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-orange));
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.history-item {
+    background: var(--white);
+    padding: var(--spacing-sm);
+    border-radius: 10px;
+    border-left: 5px solid var(--primary-blue);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.history-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+}
+
+.history-text {
+    font-weight: 600;
+    color: var(--dark-blue);
+}
+
+.history-time {
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-orange);
+    color: var(--primary-orange);
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
+.btn-outline:hover {
+    background: var(--primary-orange);
+    color: var(--white);
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: var(--white);
+    padding: var(--spacing-lg);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.training-fields {
+    margin: var(--spacing-md) 0;
+    background: var(--light-gray);
+    padding: var(--spacing-md);
+    border-radius: 10px;
+}
+
+.training-fields input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: white;
+    font-weight: 600;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .translation-result {
+        grid-template-columns: 1fr;
+    }
+}

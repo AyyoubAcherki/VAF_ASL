@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - ASL Recognition{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css">
+{% endblock %}
+
+{% block content %}
+<section class="analytics-section">
+    <div class="container">
+        <h1 class="page-title">Analyse des Données</h1>
+        <p class="page-subtitle">Visualisez vos prédictions, statistiques et résultats de quiz</p>
+        
+        <div class="analytics-controls">
+            <button class="btn btn-primary" onclick="loadAnalytics()">Actualiser</button>
+            <a href="/api/powerbi/export" class="btn btn-secondary" target="_blank">Exporter pour PowerBI</a>
+            <a href="{{ url_for('main.quiz_page') }}" class="btn btn-secondary">Nouveau Quiz</a>
+        </div>
+        
+        <!-- Onglets pour basculer entre Prédictions et Quiz -->
+        <div class="analytics-tabs">
+            <button class="analytics-tab-btn active" onclick="switchAnalyticsTab('predictions')">Prédictions</button>
+            <button class="analytics-tab-btn" onclick="switchAnalyticsTab('quiz')">Quiz</button>
+        </div>
+        
+        <!-- Section Prédictions -->
+        <div class="analytics-tab-content active" id="predictionsTab">
+        
+        <div class="analytics-grid">
+            <div class="stat-card">
+                <h3>Total des Prédictions</h3>
+                <div class="stat-value" id="totalPredictions">-</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Confiance Moyenne</h3>
+                <div class="stat-value" id="avgConfidence">-</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Types de Prédictions</h3>
+                <div class="stat-value" id="predictionTypes">-</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Classes Uniques</h3>
+                <div class="stat-value" id="uniqueClasses">-</div>
+            </div>
+        </div>
+        
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Prédictions par Type</h3>
+                <canvas id="typeChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Prédictions par Classe</h3>
+                <canvas id="classChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Prédictions par Jour (30 derniers jours)</h3>
+                <canvas id="dailyChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Confiance par Type</h3>
+                <canvas id="confidenceChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="data-table">
+            <h3>Détails des Prédictions</h3>
+            <div class="table-responsive">
+                <table id="predictionsTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Classe</th>
+                            <th>Confiance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="predictionsTableBody">
+                        <tr>
+                            <td colspan="4" style="text-align: center;">Chargement...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+        
+        <!-- Section Quiz -->
+        <div class="analytics-tab-content" id="quizTab" style="display: none;">
+            <div class="quiz-stats-grid">
+                <div class="stat-card">
+                    <h3>Total Quiz</h3>
+                    <div class="stat-value" id="totalQuizzes">-</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Score Moyen</h3>
+                    <div class="stat-value" id="avgScore">-</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Meilleur Score</h3>
+                    <div class="stat-value" id="bestScore">-</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Durée Moyenne</h3>
+                    <div class="stat-value" id="avgDuration">-</div>
+                </div>
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Évolution des Scores</h3>
+                    <canvas id="scoresChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h3>Distribution des Scores</h3>
+                    <canvas id="distributionChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h3>Signes les Plus Difficiles</h3>
+                    <canvas id="errorsChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h3>Quiz par Jour (30 derniers jours)</h3>
+                    <canvas id="quizDailyChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="prediction-section">
+                <h3>Précision des Prédictions par Signe</h3>
+                <p class="section-description">Analyse de votre taux de réussite pour chaque signe ASL</p>
+                <div class="prediction-table-container">
+                    <table id="predictionTable">
+                        <thead>
+                            <tr>
+                                <th>Signe</th>
+                                <th>Total Tentatives</th>
+                                <th>Réponses Correctes</th>
+                                <th>Taux de Réussite</th>
+                                <th>Barre de Progression</th>
+                            </tr>
+                        </thead>
+                        <tbody id="predictionBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="recent-results">
+                <h3>Derniers Résultats</h3>
+                <div class="results-table-container">
+                    <table id="recentResultsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Réponses Correctes</th>
+                                <th>Total Questions</th>
+                                <th>Durée</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentResultsBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}
+
+

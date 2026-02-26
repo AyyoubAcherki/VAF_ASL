@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Mon Profil - ASL Recognition{% endblock %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="container">
+        <h1 class="page-title">Mon Profil</h1>
+        <p class="page-subtitle">Gérez vos informations personnelles et paramètres de compte</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="profile-container">
+            <div class="profile-sidebar">
+                <div class="profile-avatar">
+                    <form method="POST" action="{{ url_for('main.update_profile') }}" enctype="multipart/form-data"
+                        id="avatarForm">
+                        <input type="hidden" name="form_type" value="image">
+                        <input type="file" name="profile_image" id="profile_image" accept="image/*"
+                            style="display: none;" onchange="document.getElementById('avatarForm').submit();">
+
+                        <div class="avatar-circle" onclick="document.getElementById('profile_image').click();"
+                            style="cursor: pointer; position: relative; overflow: hidden;">
+                            {% if user_info.profile_image %}
+                            <img src="{{ url_for('main.uploaded_file', filename=user_info.profile_image.replace('uploads/', '')) }}"
+                                alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                            <span class="avatar-initials">
+                                {% if user_info.first_name %}
+                                {{ user_info.first_name[0]|upper }}
+                                {% elif user_name %}
+                                {{ user_name[0]|upper }}
+                                {% else %}
+                                {{ user_email[0]|upper }}
+                                {% endif %}
+                            </span>
+                            {% endif %}
+
+                            <div class="avatar-overlay"
+                                style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); padding: 5px; text-align: center; color: white; font-size: 0.8rem; transform: translateY(100%); transition: transform 0.3s;">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-3"
+                            onclick="document.getElementById('profile_image').click();"
+                            style="margin-top: 1rem; border-radius: 20px; font-size: 0.85rem;">
+                            <i class="fas fa-camera"></i> Changer la photo
+                        </button>
+                    </form>
+                    <style>
+                        .avatar-circle:hover .avatar-overlay {
+                            transform: translateY(0);
+                        }
+                    </style>
+                    <h3>
+                        {% if user_info.first_name and user_info.last_name %}
+                        {{ user_info.first_name }} {{ user_info.last_name }}
+                        {% elif user_info.first_name %}
+                        {{ user_info.first_name }}
+                        {% elif user_name %}
+                        {{ user_name }}
+                        {% else %}
+                        Utilisateur
+                        {% endif %}
+                    </h3>
+                    <p class="user-email">{{ user_email }}</p>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Prédictions</span>
+                        <span class="stat-value" id="totalPredictions">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Date d'inscription</span>
+                        <span class="stat-value" id="memberSince">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-content">
+                <div class="profile-tabs">
+                    <button class="tab-btn active" onclick="switchProfileTab('info')">Informations</button>
+                    <button class="tab-btn" onclick="switchProfileTab('password')">Mot de passe</button>
+                </div>
+
+                <!-- Onglet Informations -->
+                <div class="tab-content active" id="infoTab">
+                    <form method="POST" action="{{ url_for('main.update_profile') }}" class="profile-form" id="infoForm">
+                        <input type="hidden" name="form_type" value="info">
+
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" class="form-input" value="{{ user_email }}"
+                                disabled placeholder=" ">
+                            <label for="email">Email</label>
+                            <small style="display: block; margin-top: 5px; color: var(--gray);">L'email ne peut pas être
+                                modifié</small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" id="first_name" name="first_name" class="form-input"
+                                    value="{{ user_info.first_name or '' }}" placeholder=" ">
+                                <label for="first_name">Prénom</label>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="last_name" name="last_name" class="form-input"
+                                    value="{{ user_info.last_name or '' }}" placeholder=" ">
+                                <label for="last_name">Nom</label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                            <a href="{{ url_for('main.index') }}" class="btn btn-outline">Annuler</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Onglet Mot de passe -->
+                <div class="tab-content" id="passwordTab">
+                    <form method="POST" action="{{ url_for('main.update_profile') }}" class="profile-form" id="passwordForm">
+                        <input type="hidden" name="form_type" value="password">
+
+                        <div class="form-group">
+                            <input type="password" id="current_password" name="current_password" class="form-input"
+                                placeholder=" " required>
+                            <label for="current_password">Mot de passe actuel</label>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="password" id="new_password" name="new_password" class="form-input"
+                                placeholder=" " required minlength="6">
+                            <label for="new_password">Nouveau mot de passe</label>
+                            <small>Minimum 6 caractères</small>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="password" id="confirm_new_password" name="confirm_new_password"
+                                class="form-input" placeholder=" " required minlength="6">
+                            <label for="confirm_new_password">Confirmer le nouveau mot de passe</label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Changer le mot de passe</button>
+                            <a href="{{ url_for('main.index') }}" class="btn btn-outline">Annuler</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchProfileTab(tab) {
+        // Masquer tous les onglets dans le contenu du profil
+        const allTabs = document.querySelectorAll('.profile-content .tab-content');
+        allTabs.forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // Désactiver tous les boutons dans les onglets du profil
+        const allButtons = document.querySelectorAll('.profile-tabs .tab-btn');
+        allButtons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Afficher l'onglet sélectionné
+        if (tab === 'info') {
+            const infoTab = document.getElementById('infoTab');
+            if (infoTab) infoTab.classList.add('active');
+            if (allButtons[0]) allButtons[0].classList.add('active');
+        } else {
+            const passwordTab = document.getElementById('passwordTab');
+            if (passwordTab) passwordTab.classList.add('active');
+            if (allButtons[1]) allButtons[1].classList.add('active');
+        }
+    }
+
+    // Charger les statistiques
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/api/profile/stats');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.total_predictions !== undefined) {
+                    document.getElementById('totalPredictions').textContent = data.total_predictions;
+                }
+                if (data.member_since) {
+                    const date = new Date(data.member_since);
+                    const formattedDate = date.toLocaleDateString('fr-FR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    document.getElementById('memberSince').textContent = formattedDate;
+                } else {
+                    document.getElementById('memberSince').textContent = '-';
+                }
+            }
+        } catch (error) {
+            console.error('Erreur lors du chargement des statistiques:', error);
+            document.getElementById('totalPredictions').textContent = '0';
+            document.getElementById('memberSince').textContent = '-';
+        }
+    });
+</script>
+{% endblock %}

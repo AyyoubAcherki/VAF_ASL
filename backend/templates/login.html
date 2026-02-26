@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion - ASL Recognition{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="auth-container">
+        <!-- Visual Side -->
+        <div class="auth-visual-side">
+            <div class="visual-content">
+                <img src="{{ url_for('static', filename='images/LOGO1.png') }}" alt="Logo" class="auth-logo-hero">
+            </div>
+        </div>
+
+        <!-- Form Side -->
+        <div class="auth-form-side">
+            <div class="auth-card">
+                <div class="auth-header-flex">
+                    <h1 class="auth-title">Connexion</h1>
+                    <p class="auth-subtitle">Connectez-vous pour accéder à votre espace</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('main.login') }}" class="auth-form">
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" class="form-input" placeholder=" " required
+                            autofocus>
+                        <label for="email">Adresse Email</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" id="password" name="password" class="form-input" placeholder=" "
+                            required>
+                        <label for="password">Mot de passe</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Se connecter <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Pas encore de compte? <a href="{{ url_for('main.signup') }}">Rejoignez-nous</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

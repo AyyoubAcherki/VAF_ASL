@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription - ASL Recognition{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="auth-container">
+        <!-- Visual Side -->
+        <div class="auth-visual-side">
+            <div class="visual-content">
+                <img src="{{ url_for('static', filename='images/LOGO1.png') }}" alt="Logo" class="auth-logo-hero">
+            </div>
+        </div>
+
+        <!-- Form Side -->
+        <div class="auth-form-side">
+            <div class="auth-card">
+                <div class="auth-header-flex">
+                    <h1 class="auth-title">Inscription</h1>
+                    <p class="auth-subtitle">Créez votre compte gratuit</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('main.signup') }}" class="auth-form">
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" class="form-input" placeholder=" " required
+                            autofocus>
+                        <label for="email">Adresse Email *</label>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="first_name" name="first_name" class="form-input" placeholder=" ">
+                            <label for="first_name">Prénom</label>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="last_name" name="last_name" class="form-input" placeholder=" ">
+                            <label for="last_name">Nom</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" id="password" name="password" class="form-input" placeholder=" " required
+                            minlength="6">
+                        <label for="password">Mot de passe *</label>
+                        <small>Minimum 6 caractères</small>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-input"
+                            placeholder=" " required minlength="6">
+                        <label for="confirm_password">Confirmer le mot de passe *</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Créer mon compte <i class="fas fa-user-plus"></i>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Déjà un compte? <a href="{{ url_for('main.login') }}">Se connecter</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Conversation Bridge - ASL Recognition{% endblock %}
+
+{% block extra_css %}
+<style>
+    .conversation-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 20px;
+        height: calc(100vh - 120px);
+        margin-top: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* WhatsApp-like Chat Section */
+    .chat-section {
+        background-color: #efeae2;
+        background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        /* WhatsApp Doodle bg */
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid #d1d7db;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-header {
+        padding: 10px 16px;
+        background-color: #f0f2f5;
+        border-bottom: 1px solid #d1d7db;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 60px;
+    }
+
+    .chat-header h2 {
+        color: #111b21;
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .chat-header small {
+        color: #54656f;
+        font-size: 0.8rem;
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        /* WhatsApp messages are close */
+        scroll-behavior: auto;
+        /* Instant scroll is more app-like */
+    }
+
+    /* Message Bubbles */
+    .message {
+        max-width: 65%;
+        padding: 6px 7px 8px 9px;
+        border-radius: 7.5px;
+        position: relative;
+        font-size: 14.2px;
+        line-height: 19px;
+        color: #111b21;
+        box-shadow: 0 1px 0.5px rgba(11, 20, 26, .13);
+        margin-bottom: 8px;
+        animation: popIn 0.2s cubic-bezier(0.1, 0.82, 0.25, 1);
+    }
+
+    @keyframes popIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* VOCAL -> ME (Right, Green) */
+    .message.vocal {
+        align-self: flex-end;
+        background-color: #d9fdd3;
+        border-top-right-radius: 0;
+    }
+
+    /* SIGNER -> THEM (Left, White) */
+    .message.signer {
+        align-self: flex-start;
+        background-color: #ffffff;
+        border-top-left-radius: 0;
+    }
+
+    /* SYSTEM -> CENTER (Gray badge) */
+    .message.system {
+        align-self: center;
+        background-color: rgba(225, 245, 254, 0.9);
+        color: #54656f;
+        border-radius: 8px;
+        font-size: 12.5px;
+        padding: 5px 12px;
+        box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 90%;
+        border: none;
+        margin: 10px 0;
+    }
+
+    /* Metadata (Timestamp) */
+    .message-info {
+        display: block;
+        text-align: right;
+        font-size: 11px;
+        color: #667781;
+        margin-top: 2px;
+        margin-bottom: 0;
+        line-height: normal;
+        pointer-events: none;
+    }
+
+    .message-sender {
+        display: none;
+        /* Hide sender name for cleaner look, like WhatsApp */
+    }
+
+    .message.system .message-info {
+        display: none;
+    }
+
+    /* Inputs Section */
+    .signer-section {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .webcam-card,
+    .vocal-card {
+        background: #ffffff;
+        border-radius: 0;
+        border: 1px solid #d1d7db;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .webcam-card {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    .status-active {
+        background: #00a884;
+        /* WhatsApp Teal */
+        box-shadow: 0 0 5px #00a884;
+    }
+
+    .status-inactive {
+        background: #aebac1;
+    }
+
+    .control-panel {
+        padding: 10px 16px;
+        background-color: #f0f2f5;
+        border-top: 1px solid #d1d7db;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .mic-visualizer {
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+    }
+
+    .bar {
+        width: 4px;
+        background: #00a884;
+        border-radius: 2px;
+    }
+
+    .typing-indicator {
+        font-size: 12px;
+        color: #00a884;
+        padding: 5px 20px;
+        font-weight: 500;
+        background-color: #f0f2f5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="conversation-container">
+        <!-- Chat Area -->
+        <section class="chat-section">
+            <div class="chat-header">
+                <div>
+                    <h2 style="margin: 0; font-size: 1.25rem;">Pont de Conversation</h2>
+                    <small>Interface bidirectionnelle Parole ↔ Signes</small>
+                </div>
+                <div class="chat-stats">
+                    <span id="p1-status"><span class="status-dot status-inactive"></span>Vocal</span>
+                    <span style="margin: 0 10px;">|</span>
+                    <span id="p2-status"><span class="status-dot status-inactive"></span>Signeur</span>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message vocal"
+                    style="background: rgba(255,255,255,0.05); color: #ccc; align-self: center; text-align: center; border-radius: 10px;">
+                    Démarrez la conversation pour commencer à échanger.
+                </div>
+            </div>
+
+            <div id="typingIndicator" class="typing-indicator" style="display: none;">Le signeur est en train de
+                signer...</div>
+
+            <div class="control-panel" style="background: transparent; border: none;">
+                <!-- Initial State: Two main buttons -->
+                <button class="btn" id="btnSigner" onclick="toggleSignerMode()"
+                    style="background-color: #00a884; color: white; border-radius: 25px; padding: 10px 25px; border: none; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-video"></i> <span>Activer Caméra (Signer)</span>
+                </button>
+
+                <button class="btn" id="btnSpeaker" onclick="toggleSpeakerMode()"
+                    style="background-color: #008fcc; color: white; border-radius: 25px; padding: 10px 25px; border: none; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-microphone"></i> <span>Activer Micro (Parler)</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Inputs Area -->
+        <aside class="signer-section">
+            <div class="webcam-card" style="position: relative;">
+                <div
+                    style="padding: 10px; background: #2E6F40; color: white; font-size: 0.85rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                    <span>FLUX VISUEL</span>
+                    <span id="fluxStatusBadge"
+                        style="background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">Inactif</span>
+                </div>
+                <!-- Webcam Video -->
+                <video id="webcam" autoplay playsinline style="width: 100%; display: block;"></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+
+                <!-- Signer Prediction Progress -->
+                <div id="signProgress"
+                    style="height: 4px; background: rgba(255,255,255,0.1); position: absolute; bottom: 0; left: 0; width: 100%;">
+                    <div id="signProgressBar"
+                        style="width: 0%; height: 100%; background: #4CAF50; transition: width 0.1s linear;"></div>
+                </div>
+
+                <!-- Avatar/Video Container (Overlay) -->
+                <div id="systemSignerContainer"
+                    style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #111b21; z-index: 10;">
+                    <!-- Avatar 3D Scene -->
+                    <div id="avatar3DContainer" style="width: 100%; height: 100%; background: #111b21;"></div>
+
+                    <!-- Video Player Fallback -->
+                    <video id="signVideoPlayer" style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                        playsinline></video>
+
+                    <!-- Image Fallback -->
+                    <img src="{{ url_for('static', filename='images/avatar_pro.png') }}" id="proAvatarImg"
+                        style="width: 100%; height: 100%; object-fit: cover; display: none;">
+
+                    <!-- Header Overlay -->
+                    <div
+                        style="position: absolute; top: 0; left: 0; width: 100%; padding: 10px; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); color: white; z-index: 20; display: flex; justify-content: space-between;">
+                        <span style="font-weight: 600; font-size: 0.9rem;">🤖 Interprète IA</span>
+                        <div id="avatarStatusText" style="font-size: 0.8rem; opacity: 0.8;">En attente...</div>
+                    </div>
+
+                    <!-- Badge Only Overlay -->
+                    <div class="pro-avatar-overlay"
+                        style="pointer-events: none; position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 15;">
+                        <div id="signBadgeContainer" style="transform: translateY(20px);"></div>
+                    </div>
+
+                    <!-- Bottom Controls -->
+                    <div
+                        style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); z-index: 20;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
+                            <div style="color: white;">
+                                <div id="currentSignName" style="font-weight: bold; font-size: 1.1rem;">Système</div>
+                                <div style="font-size: 0.8rem; opacity: 0.8;">Traduction en cours...</div>
+                            </div>
+                            <button onclick="closeAvatarView()"
+                                style="background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
+                                ✕
+                            </button>
+                        </div>
+                        <!-- Progress Bar -->
+                        <div
+                            style="width: 100%; background: rgba(255,255,255,0.2); height: 3px; border-radius: 2px; overflow: hidden;">
+                            <div id="animationProgress"
+                                style="width: 0%; height: 100%; background: #00a884; transition: width 0.3s ease;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vocal-card">
+                <div style="margin-bottom: 15px; font-weight: 600; color: #004E89;">ENTRÉE VOCALE</div>
+                <div class="mic-visualizer" id="micVisualizer">
+                    <div class="bar" style="height: 10px;"></div>
+                    <div class="bar" style="height: 20px;"></div>
+                    <div class="bar" style="height: 15px;"></div>
+                    <div class="bar" style="height: 25px;"></div>
+                    <div class="bar" style="height: 12px;"></div>
+                </div>
+                <small id="vocalStatus" style="color: #666;">Microphone inactif</small>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="{{ url_for('static', filename='js/avatar_3d.js') }}"></script>
+<script src="{{ url_for('static', filename='js/conversation.js') }}"></script>
+{% endblock %}

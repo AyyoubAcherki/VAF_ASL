@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ASL Recognition{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/LOGO1.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/LOGO1.png') }}" alt="ASL Recognition Logo"
+                        class="sidebar-logo">
+                    <span class="logo-text"></span>
+                </div>
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <nav class="nav">
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('main.index') }}" class="nav-link"><i class="fas fa-home"></i>
+                            <span>Accueil</span></a></li>{% if user_email %}<li><a
+                            href="{{ url_for('main.predict_page') }}" class="nav-link"><i class="fas fa-image"></i>
+                            <span>Prédiction Image</span></a></li>
+                    <li><a href="{{ url_for('main.predict_online_page') }}" class="nav-link"><i
+                                class="fas fa-video"></i>
+                            <span>Prédiction En Ligne</span></a></li>
+                    <li><a href="{{ url_for('main.conversation_page') }}" class="nav-link"><i
+                                class="fas fa-comments"></i> <span>Espace Communication</span></a></li>
+                    <li><a href="{{ url_for('main.quiz_page') }}" class="nav-link"><i
+                                class="fas fa-question-circle"></i>
+                            <span>Quiz</span></a></li>
+                    <li><a href="{{ url_for('main.analytics_page') }}" class="nav-link"><i
+                                class="fas fa-chart-line"></i>
+                            <span>Analytics</span></a></li>{% endif %}<li><a href="{{ url_for('main.education_page') }}"
+                            class="nav-link"><i class="fas fa-graduation-cap"></i> <span>Éducation</span></a></li>
+                </ul>
+
+                <div class="nav-footer">
+                    {% if user_email %}
+                    <div class="sidebar-bottom-actions">
+                        <a href="#" class="btn-help">
+                            <i class="fas fa-life-ring"></i> Besoin d'aide ?
+                        </a>
+                    </div>
+                    <ul class="nav-menu">
+                        <li><a href="{{ url_for('main.profile_page') }}" class="nav-link">
+                                {% if current_user_profile and current_user_profile.profile_image %}
+                                <img src="{{ url_for('main.uploaded_file', filename=current_user_profile.profile_image.replace('uploads/', '')) }}"
+                                    alt="Avatar" class="nav-avatar">
+                                {% else %}
+                                <i class="fas fa-user"></i>
+                                {% endif %}
+                                <span>Profil</span></a></li>
+                        <li><a href="{{ url_for('main.logout') }}" class="nav-link logout-link"><i
+                                    class="fas fa-sign-out-alt"></i> <span>Déconnexion</span></a></li>
+                    </ul>
+                    {% else %}
+                    <ul class="nav-menu">
+                        <li><a href="{{ url_for('main.login') }}" class="nav-link"><i class="fas fa-sign-in-alt"></i>
+                                <span>Connexion</span></a></li>
+                        <li><a href="{{ url_for('main.signup') }}" class="nav-link"><i class="fas fa-user-plus"></i>
+                                <span>Inscription</span></a></li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </nav>
+        </aside>
+
+        <div class="main-wrapper">
+            <!-- Main Content -->
+            <main class="main-content">
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="container">
+                    <div class="footer-content">
+                        <p class="copyright">&copy; 2024 ASL Recognition. Tous droits réservés.</p>
+                        <p class="creator">Réalisé par <span class="vaf-brand">VAF</span></p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Éducation ASL - ASL Recognition{% endblock %}
+
+{% block content %}
+<section class="education-section">
+    <div class="container">
+        <h1 class="page-title">Apprentissage de la Langue des Signes Américaine</h1>
+        <p class="page-subtitle">Découvrez chaque signe avec des images et leurs significations</p>
+
+        <div class="education-filters">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un signe...">
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterSigns('all')">Tous</button>
+                <button class="filter-btn" onclick="filterSigns('letters')">Lettres</button>
+                <button class="filter-btn" onclick="filterSigns('special')">Spéciaux</button>
+            </div>
+        </div>
+
+        <div class="signs-grid" id="signsGrid">
+            {% for image_data in images_data %}
+            <div class="sign-card"
+                data-type="{% if image_data['class'] in ['del', 'nothing', 'space'] %}special{% else %}letters{% endif %}"
+                data-name="{{ image_data['class'] }}">
+                <div class="sign-image">
+                    <img src="{{ url_for('main.serve_image', filename=image_data['filename']) }}"
+                        alt="{{ image_data['class'] }}">
+                </div>
+                <div class="sign-info">
+                    <h3 class="sign-class">{{ image_data['class'] }}</h3>
+                    <p class="sign-meaning">{{ image_data['meaning'] }}</p>
+                </div>
+                <div class="sign-actions">
+                    <button class="btn btn-small"
+                        onclick="showSignDetails('{{ image_data['class'] }}', '{{ image_data['meaning'] }}', '{{ url_for('main.serve_image', filename=image_data['filename']) }}')">
+                        Détails
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Modal pour les détails -->
+<div class="modal" id="signModal" style="display: none;">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeSignModal()">&times;</span>
+        <div class="modal-body">
+            <div class="modal-image">
+                <img id="modalImage" src="" alt="Signe ASL">
+            </div>
+            <div class="modal-info">
+                <h2 id="modalClass"></h2>
+                <p id="modalMeaning"></p>
+                <div class="modal-tips">
+                    <h3>Conseils pour faire ce signe:</h3>
+                    <ul id="modalTips">
+                        <!-- Les conseils seront ajoutés dynamiquement -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/education.js') }}"></script>
+{% endblock %}

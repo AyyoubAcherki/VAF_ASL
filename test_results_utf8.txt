@@ -1,0 +1,91 @@
+﻿­ƒÜÇ Complete Phrase Prediction Integration Test
+
+­ƒº¬ Testing Complete Phrase Prediction Integration
+================================================================================
+
+­ƒôÜ Phrase Database: 84 phrases loaded
+  ÔÜá´©Å  Base database only (extended phrases not merged)
+
+================================================================================
+­ƒö¼ Running Test Cases
+================================================================================
+
+[1/8] Exact Phrase Match (French)
+  Input: "Comment allez-vous?"
+  ÔØî Type: constructed (expected: phrase)
+
+[2/8] Exact Phrase Match (English)
+  Input: "Thank you very much"
+  Ô£à Type: phrase
+  ASL: THANK_YOU
+  Ô£à Sequence matches expected
+  Grammar: statement
+  Confidence: 100.0%
+
+[3/8] Exact Phrase Match (Arabic)
+  Input: "Ï┤┘âÏ▒Ïº Ï¼Ï▓┘è┘äÏº"
+  Ô£à Type: phrase
+  ASL: THANK_YOU
+  Ô£à Sequence matches expected
+  Grammar: statement
+  Confidence: 100.0%
+
+[4/8] Extended Phrase (Medical)
+  Input: "J'ai mal ├á la t├¬te"
+  ÔØî Type: constructed (expected: phrase)
+
+[5/8] Extended Phrase (Travel)
+  Input: "Where is the airport?"
+  Ô£à Type: phrase
+  ASL: AIRPORT + WHERE
+  Ô£à Sequence matches expected
+  Grammar: wh_question
+  Confidence: 100.0%
+
+[6/8] Constructed with Grammar (Time-First)
+  Input: "Je vais ├á l'├®cole demain"
+  Ô£à Type: constructed
+  ASL: TOMORROW + UNKNOWN_JE + UNKNOWN_VAIS + UNKNOWN_├Ç + UNKNOWN_L'├ëCOLE
+  Grammar: statement
+  Ô£à Grammar matches expected
+  Confidence: 70.0%
+
+[7/8] Constructed with Grammar (WH-Question)
+  Input: "O├╣ vas-tu?"
+  Ô£à Type: constructed
+  ASL: UNKNOWN_O├Ö + UNKNOWN_VAS-TU?
+  Grammar: wh_question
+  Ô£à Grammar matches expected
+  Confidence: 70.0%
+  Non-manual: [{'type': 'eyebrows_furrowed', 'duration': 'full_sentence'}]
+
+[8/8] Constructed with Grammar (Negation)
+  Input: "Je ne sais pas"
+  Ô£à Type: phrase
+  ASL: KNOW + NOT
+  Ô£à Sequence matches expected
+  Grammar: negation
+  Confidence: 100.0%
+  Non-manual: headshake
+
+================================================================================
+­ƒôè TEST SUMMARY
+================================================================================
+Ô£à Passed: 6/8
+ÔØî Failed: 2/8
+­ƒôÜ Total Phrases: 84
+
+ÔÜá´©Å  2 test(s) failed
+
+
+­ƒöî Testing API Response Format
+================================================================================
+Checking required fields:
+  Ô£à type: str
+  Ô£à original_text: str
+  Ô£à asl_sequence: list
+  Ô£à grammar_type: str
+  Ô£à confidence: float
+  Ô£à word_details: list
+
+Ô£à API response format is correct!

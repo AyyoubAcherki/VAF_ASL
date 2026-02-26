@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz ASL - ASL Recognition{% endblock %}
+
+{% block content %}
+<section class="quiz-section">
+    <div class="container">
+        <h1 class="page-title">Quiz Interactif ASL</h1>
+        <p class="page-subtitle">Testez vos connaissances sur les signes de la langue des signes américaine</p>
+
+        <div class="quiz-interface">
+            <div class="quiz-info-card glass-card" id="quizInfo">
+                <div class="quiz-progress-wrapper">
+                    <div class="progress-info">
+                        <span>Progression</span>
+                        <span id="progressText">0%</span>
+                    </div>
+                    <div class="quiz-progress-bar">
+                        <div class="progress-fill" id="progressBar"></div>
+                    </div>
+                </div>
+                <div class="quiz-stats-row">
+                    <div class="stat-mini">
+                        <i class="fas fa-bullseye"></i>
+                        <div class="stat-details">
+                            <span class="stat-label">Score</span>
+                            <span class="stat-value" id="score">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-mini">
+                        <i class="fas fa-layer-group"></i>
+                        <div class="stat-details">
+                            <span class="stat-label">Question</span>
+                            <span class="stat-value"><span id="questionNumber">1</span>/<span id="totalQuestions">{{
+                                    images|length }}</span></span>
+                        </div>
+                    </div>
+                    <div class="stat-mini">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-details">
+                            <span class="stat-label">Temps</span>
+                            <span class="stat-value" id="timer">00:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-main-card glass-card" id="quizContent">
+                <div class="quiz-question-container">
+                    <div class="question-visual">
+                        <div class="image-wrapper">
+                            <img id="questionImage" src="" alt="Signe ASL">
+                            <div class="image-overlay"></div>
+                        </div>
+                    </div>
+
+                    <div class="question-body">
+                        <h2 class="question-prompt">Quel signe est représenté ?</h2>
+                        <div class="answers-grid" id="answersGrid">
+                            <!-- Les réponses seront générées par JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-feedback-overlay hidden" id="quizFeedback">
+                    <div class="feedback-card">
+                        <i class="feedback-icon" id="feedbackIcon"></i>
+                        <h3 id="feedbackText"></h3>
+                    </div>
+                </div>
+
+                <div class="quiz-actions-footer">
+                    <button class="btn btn-primary btn-glow hidden" id="nextBtn" onclick="nextQuestion()">
+                        <span>Suivant</span> <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="btn btn-secondary btn-glow hidden" id="restartBtn" onclick="restartQuiz()">
+                        <i class="fas fa-redo"></i> Recommencer
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-results-view glass-card hidden" id="quizResults">
+                <div class="results-header">
+                    <i class="fas fa-trophy highlight-icon"></i>
+                    <h2>Félicitations !</h2>
+                    <p>Vous avez terminé le quiz.</p>
+                </div>
+
+                <div class="results-stats">
+                    <div class="score-visual">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle" id="resultCircle" stroke-dasharray="0, 100"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="18" y="20.35" class="percentage" id="scorePercentageDisplay">0%</text>
+                        </svg>
+                    </div>
+                    <div class="score-data">
+                        <div class="data-point">
+                            <span class="label">Score Final</span>
+                            <span class="value"><span id="finalScore">0</span> / {{ images|length }}</span>
+                        </div>
+                        <p class="score-message-text" id="scoreMessage"></p>
+                    </div>
+                </div>
+
+                <div class="results-actions">
+                    <button class="btn btn-primary" onclick="restartQuiz()">
+                        <i class="fas fa-redo"></i> Nouveau Quiz
+                    </button>
+                    <a href="{{ url_for('main.analytics_page', tab='quiz') }}" class="btn btn-outline">
+                        <i class="fas fa-chart-pie"></i> Analyse mes mesures
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script id="quiz-data" type="application/json">
+    {{ images|tojson|safe }}
+</script>
+<script>
+    // Les images du quiz sont passées depuis Flask
+    const quizImages = JSON.parse(document.getElementById('quiz-data').textContent);
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/quiz.js') }}?v=3"></script>
+{% endblock %}

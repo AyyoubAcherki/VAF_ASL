@@ -1,0 +1,9 @@
+This directory should contain ASL alphabet images.
+
+For a complete implementation, you would need to add:
+- asl_a.jpg through asl_z.jpg (26 images total)
+- Each image should show the corresponding ASL hand sign
+- Recommended size: 200x200 pixels
+- Format: JPG or PNG
+
+For now, the application will show placeholder letters when images are not found.

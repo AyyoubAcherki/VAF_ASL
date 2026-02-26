@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Prédiction d'Image - ASL Recognition{% endblock %}
+
+{% block content %}
+<section class="predict-section">
+    <div class="container">
+        <h1 class="page-title">Prédiction d'Image ASL</h1>
+        <p class="page-subtitle">Uploadez une image de signe ASL pour obtenir une prédiction</p>
+        
+        <div class="predict-container">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p>Glissez-déposez une image ici ou cliquez pour sélectionner</p>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">Sélectionner une image</button>
+                </div>
+            </div>
+            
+            <div class="preview-area" id="previewArea" style="display: none;">
+                <div class="image-preview">
+                    <img id="previewImage" src="" alt="Preview">
+                    <button class="btn-remove" onclick="removeImage()">×</button>
+                </div>
+                <button class="btn btn-primary" id="predictBtn" onclick="predictImage()">Prédire</button>
+            </div>
+            
+            <div class="result-area" id="resultArea" style="display: none;">
+                <h2>Résultat de la Prédiction</h2>
+                <div class="prediction-result">
+                    <div class="predicted-class">
+                        <span class="class-label">Signe prédit:</span>
+                        <span class="class-value" id="predictedClass"></span>
+                    </div>
+                    <div class="confidence">
+                        <span class="confidence-label">Confiance:</span>
+                        <span class="confidence-value" id="confidenceValue"></span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidenceFill"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="all-predictions" id="allPredictions">
+                    <h3>Toutes les Prédictions</h3>
+                    <div class="predictions-list" id="predictionsList"></div>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyse en cours...</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/predict.js') }}"></script>
+{% endblock %}
+
+
